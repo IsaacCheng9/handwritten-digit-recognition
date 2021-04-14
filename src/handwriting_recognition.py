@@ -14,12 +14,6 @@ def show_data_sample_details():
     return data
 
 
-def analyse_handwritten_digits(data):
-    k_means, reduced_data = k_means_clustering(data)
-    create_decision_boundaries(k_means, reduced_data)
-    plot_cluster_graph(k_means, reduced_data)
-
-
 def k_means_clustering(data):
     # Reduces the data to points in 2D space.
     reduced_data = PCA(n_components=2).fit_transform(data)
@@ -45,7 +39,7 @@ def create_decision_boundaries(k_means, reduced_data):
     plt.clf()
     plt.imshow(mesh_labels, interpolation="nearest",
                extent=(mesh_x.min(), mesh_x.max(), mesh_y.min(), mesh_y.max()),
-               cmap=plt.cm.tab10, aspect="auto", origin="lower")
+               cmap="tab10", aspect="auto", origin="lower")
 
 
 def plot_cluster_graph(k_means, reduced_data):
@@ -53,9 +47,10 @@ def plot_cluster_graph(k_means, reduced_data):
     centroids = k_means.cluster_centers_
     # Adds the clusters of the data to the graph in different colours.
     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=k_means.labels_,
-                cmap="rainbow", s=8)
-    # Marks centroids with red dots.
-    plt.scatter(centroids[:, 0], centroids[:, 1], color="red")
+                cmap="turbo", s=5)
+    # Marks centroids with white crosses.
+    plt.scatter(centroids[:, 0], centroids[:, 1], marker="x", s=100,
+                color="white")
     plt.title("K-Means Clustering on the Digits Data Set Using PCA-Reduced "
               "Data\n(centroids marked with red dots)")
     plt.show()
@@ -63,7 +58,9 @@ def plot_cluster_graph(k_means, reduced_data):
 
 def main():
     data = show_data_sample_details()
-    analyse_handwritten_digits(data)
+    k_means, reduced_data = k_means_clustering(data)
+    create_decision_boundaries(k_means, reduced_data)
+    plot_cluster_graph(k_means, reduced_data)
 
 
 if __name__ == "__main__":

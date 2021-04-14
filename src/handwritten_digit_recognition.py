@@ -20,8 +20,8 @@ def show_data_sample_details():
     data, labels = load_digits(return_X_y=True)
     (num_samples, num_features) = data.shape
     num_digits = np.unique(labels).size
-    print(("Number of Samples: {}\nNumber of Features: {}\nNumber of "
-           "Digits: {} ").format(num_samples, num_features, num_digits))
+    print("Number of Samples: {}\nNumber of Digits: {} ".
+          format(num_samples, num_digits))
     return data
 
 

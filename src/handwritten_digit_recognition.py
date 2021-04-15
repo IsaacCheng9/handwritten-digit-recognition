@@ -20,9 +20,9 @@ def show_data_sample_details():
         The sample data used for handwritten digit recognition.
     """
     data, labels = load_digits(return_X_y=True)
-    (num_samples, num_features) = data.shape
+    (num_samples, _) = data.shape
     num_digits = np.unique(labels).size
-    print("Number of Samples: {}\nNumber of Digits: {} ".
+    print("Number of Samples: {}\nNumber of Digits: {}\n".
           format(num_samples, num_digits))
     return data
 
@@ -56,24 +56,35 @@ def evaluate_accuracy(data):
     digits = load_digits()
 
     correct_predictions = 0
-    for _ in range(5):
+    for run in range(1, 11):
         _, _, cluster_numbers = k_means_clustering(data)
         cluster_groups = determine_cluster_representations(cluster_numbers,
                                                            digits)
-        for number in range(len(cluster_numbers)):
+        cluster_representations = list(cluster_groups.values())
+        print("Cluster Representations for Run #{}: {}".format(
+            run, cluster_representations))
+        for number, cluster_index in enumerate(cluster_numbers):
             real_value = digits.target[number]
-            cluster_index = cluster_numbers[number]
             if real_value == cluster_groups[cluster_index]:
                 correct_predictions += 1
-    print("Accuracy (%): {}".format(correct_predictions / 1797 * 20))
+    print("Accuracy (%): {}".format(correct_predictions / 1797 * 10))
 
 
 def determine_cluster_representations(cluster_numbers, digits):
+    """
+    Determines the digit each cluster represents.
+
+    Args:
+        cluster_numbers: A list containing the cluster index of each number.
+        digits: The sample data used for handwritten digit recognition.
+
+    Returns:
+        A dictionary showing the digit representation of each cluster group.
+    """
     # Creates a dictionary to group the real values within each cluster.
     cluster_groups = {}
-    for number in range(len(cluster_numbers)):
+    for number, cluster_index in enumerate(cluster_numbers):
         real_value = digits.target[number]
-        cluster_index = cluster_numbers[number]
         try:
             cluster_groups[cluster_index].append(real_value)
         except KeyError:
@@ -137,7 +148,7 @@ def main():
     Performs the handwritten digit recognition using k-means clustering.
     """
     data = show_data_sample_details()
-    k_means, reduced_data, cluster_numbers = k_means_clustering(data)
+    k_means, reduced_data, _ = k_means_clustering(data)
     create_decision_boundaries(k_means, reduced_data)
     plot_cluster_graph(k_means, reduced_data)
     evaluate_accuracy(data)

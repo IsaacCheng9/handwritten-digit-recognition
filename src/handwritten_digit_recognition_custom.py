@@ -42,17 +42,28 @@ def k_means_clustering(data):
     # Reduces the data to points in 2D space.
     reduced_data = PCA(n_components=2).fit_transform(data)
     # Creates a k-means object with 10 clusters, each representing a digit.
-    points = k_means_algorithm(reduced_data, 10, 1000)
+    points = k_means_implementation(reduced_data, 10, 1000)
     return points, reduced_data
 
 
-def k_means_algorithm(data_points, number_of_clusters, iterations):
-    index = np.random.choice(len(data_points), number_of_clusters,
+def k_means_implementation(reduced_data, number_of_clusters, iterations):
+    """
+    A k-means implementation made from scratch to create clusters.
+
+    Args:
+        reduced_data: Sample data reduced to 2D space.
+        number_of_clusters: The number of clusters to assign data to.
+        iterations: The number of iterations to perform the implementation for.
+
+    Returns:
+        Clustered data points to plot on a graph.
+    """
+    index = np.random.choice(len(reduced_data), number_of_clusters,
                              replace=False)
     # Creates random initial centroids and calculates the distances between
     # centroids and data points using the Euclidean distance metric.
-    centroids = data_points[index, :]
-    distances = cdist(data_points, centroids, "euclidean")
+    centroids = reduced_data[index, :]
+    distances = cdist(reduced_data, centroids, "euclidean")
     # Assigns the point to the centroid with the least distance.
     points = np.array([np.argmin(distance) for distance in distances])
 
@@ -61,8 +72,8 @@ def k_means_algorithm(data_points, number_of_clusters, iterations):
         centroids = []
         # Updates position of centroids.
         for idx in range(number_of_clusters):
-            centroids.append(data_points[points == idx].mean(axis=0))
-        distances = cdist(data_points, np.array(centroids), "euclidean")
+            centroids.append(reduced_data[points == idx].mean(axis=0))
+        distances = cdist(reduced_data, np.array(centroids), "euclidean")
         points = np.array([np.argmin(distance) for distance in distances])
 
     return points

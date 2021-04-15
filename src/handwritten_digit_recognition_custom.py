@@ -42,43 +42,43 @@ def k_means_clustering(data):
     # Reduces the data to points in 2D space.
     reduced_data = PCA(n_components=2).fit_transform(data)
     # Creates a k-means object with 10 clusters, each representing a digit.
-    k_means = k_means_algorithm(reduced_data, 10, 1000)
-    return k_means, reduced_data
+    points = k_means_algorithm(reduced_data, 10, 1000)
+    return points, reduced_data
 
 
-def k_means_algorithm(x, k, iterations):
-    # Creates random initial centroids.
-    index = np.random.choice(len(x), k, replace=False)
-    centroids = x[index, :]
-    # Calculates the distances between centroids and data points using the
-    # Euclidean distance metric.
-    distances = cdist(x, centroids, "euclidean")
+def k_means_algorithm(data_points, number_of_clusters, iterations):
+    index = np.random.choice(len(data_points), number_of_clusters,
+                             replace=False)
+    # Creates random initial centroids and calculates the distances between
+    # centroids and data points using the Euclidean distance metric.
+    centroids = data_points[index, :]
+    distances = cdist(data_points, centroids, "euclidean")
     # Assigns the point to the centroid with the least distance.
-    points = np.array([np.argmin(i) for i in distances])
+    points = np.array([np.argmin(distance) for distance in distances])
 
+    # Updates position of clusters iteratively.
     for _ in range(iterations):
         centroids = []
-        for idx in range(k):
-            temp_cent = x[points == idx].mean(axis=0)
-            centroids.append(temp_cent)
-        centroids = np.vstack(centroids)
-        distances = cdist(x, centroids, 'euclidean')
-        points = np.array([np.argmin(i) for i in distances])
+        # Updates position of centroids.
+        for idx in range(number_of_clusters):
+            centroids.append(data_points[points == idx].mean(axis=0))
+        distances = cdist(data_points, np.array(centroids), "euclidean")
+        points = np.array([np.argmin(distance) for distance in distances])
 
     return points
 
 
-def plot_cluster_graph(k_means, reduced_data):
+def plot_cluster_graph(points, reduced_data):
     """
     Plots the cluster graph and shows it.
 
     Args:
-        k_means: The ten clusters representing each digit.
+        points: The ten clusters representing each digit.
         reduced_data: Sample data reduced to 2D space.
     """
-    for unique in np.unique(k_means):
-        plt.scatter(reduced_data[k_means == unique, 0],
-                    reduced_data[k_means == unique, 1],
+    for unique in np.unique(points):
+        plt.scatter(reduced_data[points == unique, 0],
+                    reduced_data[points == unique, 1],
                     label=unique, s=5)
     plt.title("K-Means Clustering on the Digits Data Set Using PCA-Reduced "
               "Data\n(centroids marked with red dots)")
@@ -90,8 +90,8 @@ def main():
     Performs the handwritten digit recognition using k-means clustering.
     """
     data = show_data_sample_details()
-    k_means, reduced_data = k_means_clustering(data)
-    plot_cluster_graph(k_means, reduced_data)
+    points, reduced_data = k_means_clustering(data)
+    plot_cluster_graph(points, reduced_data)
 
 
 if __name__ == "__main__":
